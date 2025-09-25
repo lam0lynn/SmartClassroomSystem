@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.mapper.UserMapper">
+
+<select id="findAll" parameterType="org.example.pojo.User" resultType="org.example.pojo.User">
+    select * from user
+    <where>
+        <if test="username != null and username != ''">
+            and username like concat('%', #{username}, '%')
+        </if>
+        <if test="role != null and role != ''">
+            and role = #{role}
+        </if>
+        <if test="college != null and college != ''">
+            and college = #{college}
+        </if>
+    </where>
+</select>
+
+<select id="findUserByName" parameterType="String" resultType="org.example.pojo.User">
+    select * from user where username = #{username}
+  </select>
+  
+  <select id="findUserById" parameterType="int" resultType="org.example.pojo.User">
+    select * from user where id = #{id}
+  </select>
+  
+    <insert id="insert" parameterType="org.example.pojo.User" useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO user (
+        username, password, real_name, email, phone, role,
+        college, major, title, avatar, status
+        <!-- 不包含 create_time 和 update_time，它们由数据库自动生成 -->
+    )
+    VALUES (
+        #{username}, 
+        #{password},  <!-- 实际密码由Service层加密后传入 -->
+        #{realName}, 
+        #{email}, 
+        #{phone, jdbcType=VARCHAR}, 
+        #{role, jdbcType=VARCHAR},
+        #{college, jdbcType=VARCHAR}, 
+        #{major, jdbcType=VARCHAR}, 
+        #{title, jdbcType=VARCHAR}, 
+        #{avatar, jdbcType=VARCHAR}, 
+        #{status, jdbcType=TINYINT}
+    )
+</insert>
+
+    <update id="update" parameterType="org.example.pojo.User">
+        update user
+        set 
+            username = #{username},
+            password = #{password},
+            real_name = #{realName},
+            email = #{email},
+            phone = #{phone},
+            role = #{role},
+            college = #{college},
+            major = #{major},
+            title = #{title},
+            avatar = #{avatar},
+            status = #{status},
+            last_login = #{lastLogin}
+        where id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="int">
+       delete from user where id = #{id}
+    </delete>
+    
+    
+        <!-- 分类查询：按角色查询 -->
+    <select id="findUsersByRole" resultType="org.example.pojo.User">
+        SELECT 
+            id, username, password, real_name, email, phone, role,
+            college, major, title, avatar, status, last_login
+        FROM user
+        WHERE role = #{role}
+    </select>
+
+    <!-- 分类查询：按学院查询 -->
+    <select id="findUsersByCollege" resultType="org.example.pojo.User">
+        SELECT 
+            id, username, password, real_name, email, phone, role,
+            college, major, title, avatar, status, last_login
+        FROM user
+        WHERE college = #{college}
+    </select>
+  
+    <select id="login" parameterType="map" resultType="org.example.pojo.User">
+        select * from user where username = #{username} and password = #{password}
+    </select>
+  
+</mapper>

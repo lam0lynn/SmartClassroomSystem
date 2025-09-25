@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.mapper.ReviewMapper">
+
+    <!-- 插入新评价 -->
+    <insert id="insert" parameterType="org.example.pojo.Review">
+        INSERT INTO review (
+            classroom_id, user_id, reservation_id, rating, content, equipment_rating, cleanliness_rating, images, status
+        )
+        VALUES (
+            #{classroomId}, #{userId}, #{reservationId}, #{rating}, #{content}, #{equipmentRating}, #{cleanlinessRating}, #{images}, #{status}
+        )
+    </insert>
+
+    <!-- 更新评价信息 -->
+    <update id="update" parameterType="org.example.pojo.Review">
+        UPDATE review
+        SET 
+            classroom_id = #{classroomId},
+            user_id = #{userId},
+            reservation_id = #{reservationId},
+            rating = #{rating},
+            content = #{content},
+            equipment_rating = #{equipmentRating},
+            cleanliness_rating = #{cleanlinessRating},
+            images = #{images},
+            status = #{status}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 删除评价 -->
+    <delete id="delete" parameterType="int">
+        DELETE FROM review
+        WHERE id = #{id}
+    </delete>
+
+    <!-- 动态查询评价 -->
+    <select id="findAllReview" resultType="org.example.pojo.Review">
+        SELECT 
+            id, classroom_id, user_id, reservation_id, rating, content, equipment_rating, cleanliness_rating, images, status, create_time
+        FROM review
+        <where>
+            <if test="classroomId != null">
+                AND classroom_id = #{classroomId}
+            </if>
+            <if test="userId != null">
+                AND user_id = #{userId}
+            </if>
+            <if test="reservationId != null">
+                AND reservation_id = #{reservationId}
+            </if>
+            <if test="rating != null">
+                AND rating = #{rating}
+            </if>
+            <if test="content != null and content != ''">
+                AND content LIKE CONCAT('%', #{content}, '%')
+            </if>
+            <if test="equipmentRating != null">
+                AND equipment_rating = #{equipmentRating}
+            </if>
+            <if test="cleanlinessRating != null">
+                AND cleanliness_rating = #{cleanlinessRating}
+            </if>
+            <if test="images != null">
+                AND images = #{images}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
+    </select>
+
+    <!-- 根据评分查找 classroom_id 列表 -->
+    <select id="findClassroomIdsByRating" resultType="int">
+        SELECT DISTINCT classroom_id
+        FROM review
+        WHERE rating = #{rating}
+    </select>
+
+    <!-- 根据教室 ID 查询评价 -->
+    <select id="findReviewsByClassroomId" resultType="org.example.pojo.ReviewVO">
+        SELECT
+        r.id, r.classroom_id, r.user_id, r.reservation_id, r.rating, r.content, r.equipment_rating, r.cleanliness_rating, r.images, r.status, r.create_time,
+        u.username, u.real_name, u.avatar
+        FROM review r
+        LEFT JOIN user u ON r.user_id = u.id
+        WHERE r.classroom_id = #{classroomId}
+        AND r.status = 1
+        ORDER BY r.create_time DESC
+    </select>
+
+</mapper>
+
+
+

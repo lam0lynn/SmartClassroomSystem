@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.mapper.SeatReservationMapper">
+
+    <resultMap id="BaseResultMap" type="org.example.pojo.SeatReservation">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="user_id" property="userId" jdbcType="INTEGER"/>
+        <result column="seat_id" property="seatId" jdbcType="INTEGER"/>
+        <result column="reserve_time" property="reserveTime" jdbcType="TIMESTAMP"/>
+        <result column="status" property="status" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, user_id, seat_id, reserve_time, status, create_time, update_time
+    </sql>
+
+    <insert id="insert" parameterType="org.example.pojo.SeatReservation">
+        INSERT INTO seat_reservation (user_id, seat_id, reserve_time, status)
+        VALUES (#{userId}, #{seatId}, #{reserveTime}, #{status})
+    </insert>
+
+    <select id="selectById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM seat_reservation
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectByUserId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM seat_reservation
+        WHERE user_id = #{userId}
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="selectBySeatId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM seat_reservation
+        WHERE seat_id = #{seatId}
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="selectConflicts" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM seat_reservation
+        WHERE seat_id = #{seatId}
+        AND status IN ('已预约', '已签到')
+        AND reserve_time BETWEEN #{startTime} AND #{endTime}
+    </select>
+
+    <update id="updateStatus">
+        UPDATE seat_reservation
+        SET status = #{status}
+        WHERE id = #{id}
+    </update>
+
+    <update id="update" parameterType="org.example.pojo.SeatReservation">
+        UPDATE seat_reservation
+        <set>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="seatId != null">seat_id = #{seatId},</if>
+            <if test="reserveTime != null">reserve_time = #{reserveTime},</if>
+            <if test="status != null">status = #{status},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        DELETE FROM seat_reservation WHERE id = #{id}
+    </delete>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM seat_reservation
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 在现有的XML文件中添加以下方法 -->
+    <select id="selectByStatus" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM seat_reservation
+        WHERE status = #{status}
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="selectByUserIdAndStatus" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM seat_reservation
+        WHERE user_id = #{userId} AND status = #{status}
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="selectReservationDetails" resultType="org.example.pojo.SeatReservationVO">
+        SELECT
+        sr.id,
+        sr.user_id,
+        u.username,
+        u.real_name,
+        sr.seat_id,
+        s.seat_number,
+        s.classroom_id,
+        c.name as classroom_name,
+        sr.reserve_time,
+        sr.status,
+        sr.create_time
+        FROM seat_reservation sr
+        LEFT JOIN user u ON sr.user_id = u.id
+        LEFT JOIN seat s ON sr.seat_id = s.id
+        LEFT JOIN classroom c ON s.classroom_id = c.id
+        WHERE sr.user_id = #{userId}
+        ORDER BY sr.create_time DESC
+    </select>
+
+    <select id="selectAllReservationDetails" resultType="org.example.pojo.SeatReservationVO">
+        SELECT
+        sr.id,
+        sr.user_id,
+        u.username,
+        u.real_name,
+        sr.seat_id,
+        s.seat_number,
+        s.classroom_id,
+        c.name as classroom_name,
+        sr.reserve_time,
+        sr.status,
+        sr.create_time
+        FROM seat_reservation sr
+        LEFT JOIN user u ON sr.user_id = u.id
+        LEFT JOIN seat s ON sr.seat_id = s.id
+        LEFT JOIN classroom c ON s.classroom_id = c.id
+        ORDER BY sr.create_time DESC
+    </select>
+
+    <select id="selectByTimeRange" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM seat_reservation
+        WHERE reserve_time BETWEEN #{startTime} AND #{endTime}
+        ORDER BY reserve_time
+    </select>
+
+    <select id="selectBySeatIdAndTimeRange" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM seat_reservation
+        WHERE seat_id = #{seatId}
+        AND reserve_time BETWEEN #{startTime} AND #{endTime}
+        ORDER BY reserve_time
+    </select>
+
+</mapper>

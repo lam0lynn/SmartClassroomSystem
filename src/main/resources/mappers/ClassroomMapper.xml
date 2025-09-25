@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.mapper.ClassroomMapper">
+
+    <!-- 根据教室名称查询教室 -->
+    <select id="findClassroomByName" resultType="org.example.pojo.Classroom">
+        SELECT 
+            id, code, name, building, floor, capacity, equipment, type, status, description, image_url, admin_id, create_time, update_time
+        FROM classroom
+        WHERE name = #{classroomName}
+    </select>
+
+    <!-- 根据ID查询教室 -->
+    <select id="findClassroomById" resultType="org.example.pojo.Classroom">
+        SELECT 
+            id, code, name, building, floor, capacity, equipment, type, status, description, image_url, admin_id, create_time, update_time
+        FROM classroom
+        WHERE id = #{id}
+    </select>
+
+    <!-- 插入新教室 -->
+    <insert id="insert" parameterType="org.example.pojo.Classroom">
+        INSERT INTO classroom (
+            code, name, building, floor, capacity, equipment, type, status, description, image_url, admin_id
+        )
+        VALUES (
+            #{code}, #{name}, #{building}, #{floor}, #{capacity}, #{equipment}, #{type}, #{status}, #{description}, #{imageUrl}, #{adminId}
+        )
+    </insert>
+
+    <!-- 更新教室信息 -->
+    <update id="update" parameterType="org.example.pojo.Classroom">
+        UPDATE classroom
+        SET
+            code = #{code},
+            name = #{name},
+            building = #{building},
+            floor = #{floor},
+            capacity = #{capacity},
+            equipment = #{equipment},
+            type = #{type},
+            status = #{status},
+            description = #{description},
+            image_url = #{imageUrl},
+            admin_id = #{adminId}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 删除教室 -->
+    <delete id="delete" parameterType="int">
+        DELETE FROM classroom
+        WHERE id = #{id}
+    </delete>
+
+    <!-- 动态查询教室 -->
+    <select id="findAllClassroom" resultType="org.example.pojo.Classroom">
+        SELECT 
+            id, code, name, building, floor, capacity, equipment, type, status, description, image_url, admin_id, create_time, update_time
+        FROM classroom
+        <where>
+            <if test="code != null and code != ''">
+                AND code = #{code}
+            </if>
+            <if test="name != null and name != ''">
+                AND name = #{name}
+            </if>
+            <if test="building != null and building != ''">
+                AND building = #{building}
+            </if>
+            <if test="floor != null">
+                AND floor = #{floor}
+            </if>
+            <if test="capacity != null">
+                AND capacity = #{capacity}
+            </if>
+            <if test="equipment != null">
+                AND equipment = #{equipment}
+            </if>
+            <if test="type != null and type != ''">
+                AND type = #{type}
+            </if>
+            <if test="status != null and status != ''">
+                AND status = #{status}
+            </if>
+            <if test="description != null and description != ''">
+                AND description LIKE CONCAT('%', #{description}, '%')
+            </if>
+            <if test="imageUrl != null and imageUrl != ''">
+                AND image_url = #{imageUrl}
+            </if>
+            <if test="adminId != null">
+                AND admin_id = #{adminId}
+            </if>
+        </where>
+    </select>
+
+    <!-- 根据类型查询教室 -->
+    <select id="findClassroomsByType" resultType="org.example.pojo.Classroom">
+        SELECT 
+            id, code, name, building, floor, capacity, equipment, type, status, description, image_url, admin_id, create_time, update_time
+        FROM classroom
+        WHERE type = #{type}
+    </select>
+
+    <!-- 根据状态查询教室 -->
+    <select id="findClassroomsByStatus" resultType="org.example.pojo.Classroom">
+        SELECT 
+            id, code, name, building, floor, capacity, equipment, type, status, description, image_url, admin_id, create_time, update_time
+        FROM classroom
+        WHERE status = #{status}
+    </select>
+
+    <!-- 根据楼栋查询教室 -->
+    <select id="findClassroomsByBuilding" resultType="org.example.pojo.Classroom">
+        SELECT 
+            id, code, name, building, floor, capacity, equipment, type, status, description, image_url, admin_id, create_time, update_time
+        FROM classroom
+        WHERE building = #{building}
+    </select>
+
+    <!-- 根据设备配置查询教室 -->
+    <select id="findClassroomsByEquipment" resultType="org.example.pojo.Classroom">
+        SELECT 
+            id, code, name, building, floor, capacity, equipment, type, status, description, image_url, admin_id, create_time, update_time
+        FROM classroom
+        WHERE equipment LIKE CONCAT('%', #{equipment}, '%')
+    </select>
+
+    <select id="findAll" resultType="org.example.pojo.Classroom">
+        SELECT 
+            id, code, name, building, floor, capacity, equipment, type, status, description, image_url, admin_id, create_time, update_time
+        FROM classroom
+    </select>
+    <select id="findAllClassroomType" resultType="java.lang.String">
+        SELECT
+            DISTINCT type
+        FROM classroom
+        WHERE type IS NOT NULL AND type != ''
+    </select>
+    <select id="findAllClassroomsStatus" resultType="java.lang.String">
+        SELECT
+        DISTINCT status
+        FROM classroom
+        WHERE status IS NOT NULL AND status != ''
+    </select>
+
+
+</mapper>

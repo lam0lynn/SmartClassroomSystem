@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.mapper.ReservationMapper">
+
+    <!-- 插入新预约 -->
+    <insert id="insert" parameterType="org.example.pojo.Reservation">
+        INSERT INTO reservation (
+            classroom_id, user_id, start_time, end_time, purpose, participants, status, approver_id, approve_time, reject_reason, check_in_time, check_out_time, actual_participants
+        )
+        VALUES (
+            #{classroomId}, #{userId}, #{startTime}, #{endTime}, #{purpose}, #{participants}, #{status}, #{approverId}, #{approveTime}, #{rejectReason}, #{checkInTime}, #{checkOutTime}, #{actualParticipants}
+        )
+    </insert>
+
+    <!-- 更新预约信息 -->
+    <update id="update" parameterType="org.example.pojo.Reservation">
+        UPDATE reservation
+        SET 
+            classroom_id = #{classroomId},
+            user_id = #{userId},
+            start_time = #{startTime},
+            end_time = #{endTime},
+            purpose = #{purpose},
+            participants = #{participants},
+            status = #{status},
+            approver_id = #{approverId},
+            approve_time = #{approveTime},
+            reject_reason = #{rejectReason},
+            check_in_time = #{checkInTime},
+            check_out_time = #{checkOutTime},
+            actual_participants = #{actualParticipants},
+            update_time = CURRENT_TIMESTAMP
+        WHERE id = #{id}
+    </update>
+
+    <!-- 删除预约 -->
+    <delete id="delete" parameterType="int">
+        DELETE FROM reservation
+        WHERE id = #{id}
+    </delete>
+
+    <!-- 根据条件动态查询预约 -->
+    <select id="findAllReservations" resultType="org.example.pojo.Reservation">
+        SELECT 
+            id, classroom_id, user_id, start_time, end_time, purpose, participants, status, approver_id, approve_time, reject_reason, check_in_time, check_out_time, actual_participants, create_time, update_time
+        FROM reservation
+        <where>
+            <if test="classroomId != null">
+                AND classroom_id = #{classroomId}
+            </if>
+            <if test="userId != null">
+                AND user_id = #{userId}
+            </if>
+            <if test="startTime != null">
+                AND start_time = #{startTime}
+            </if>
+            <if test="endTime != null">
+                AND end_time = #{endTime}
+            </if>
+            <if test="purpose != null and purpose != ''">
+                AND purpose LIKE CONCAT('%', #{purpose}, '%')
+            </if>
+            <if test="participants != null">
+                AND participants = #{participants}
+            </if>
+            <if test="status != null and status != ''">
+                AND status = #{status}
+            </if>
+            <if test="approverId != null">
+                AND approver_id = #{approverId}
+            </if>
+            <if test="approveTime != null">
+                AND approve_time = #{approveTime}
+            </if>
+            <if test="rejectReason != null and rejectReason != ''">
+                AND reject_reason LIKE CONCAT('%', #{rejectReason}, '%')
+            </if>
+            <if test="checkInTime != null">
+                AND check_in_time = #{checkInTime}
+            </if>
+            <if test="checkOutTime != null">
+                AND check_out_time = #{checkOutTime}
+            </if>
+            <if test="actualParticipants != null">
+                AND actual_participants = #{actualParticipants}
+            </if>
+        </where>
+    </select>
+
+    <!-- 根据状态查询预约 -->
+    <select id="findReservationsByStatus" resultType="org.example.pojo.Reservation">
+        SELECT 
+            id, classroom_id, user_id, start_time, end_time, purpose, participants, status, approver_id, approve_time, reject_reason, check_in_time, check_out_time, actual_participants, create_time, update_time
+        FROM reservation
+        WHERE status = #{status}
+    </select>
+
+    <!-- 根据ID查询预约 -->
+    <select id="findById" resultType="org.example.pojo.Reservation">
+        SELECT 
+            id, classroom_id, user_id, start_time, end_time, purpose, participants, status, approver_id, approve_time, reject_reason, check_in_time, check_out_time, actual_participants, create_time, update_time
+        FROM reservation
+        WHERE id = #{id}
+    </select>
+
+    <!-- 根据教室ID查询预约 -->
+    <select id="findReservationsByClassroomId" resultType="org.example.pojo.Reservation">
+        SELECT 
+            id, classroom_id, user_id, start_time, end_time, purpose, participants, status, approver_id, approve_time, reject_reason, check_in_time, check_out_time, actual_participants, create_time, update_time
+        FROM reservation
+        WHERE classroom_id = #{classroomId}
+    </select>
+
+    <!-- 根据用户ID查询预约 -->
+    <select id="findReservationsByUserId" resultType="org.example.pojo.Reservation">
+        SELECT 
+            id, classroom_id, user_id, start_time, end_time, purpose, participants, status, approver_id, approve_time, reject_reason, check_in_time, check_out_time, actual_participants, create_time, update_time
+        FROM reservation
+        WHERE user_id = #{userId}
+    </select>
+
+</mapper>
+
+
+

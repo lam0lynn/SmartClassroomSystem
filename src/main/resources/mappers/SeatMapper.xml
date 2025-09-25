@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.mapper.SeatMapper">
+
+    <resultMap id="BaseResultMap" type="org.example.pojo.Seat">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="classroom_id" property="classroomId" jdbcType="INTEGER"/>
+        <result column="seat_number" property="seatNumber" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, classroom_id, seat_number, status, create_time, update_time
+    </sql>
+
+    <insert id="insert" parameterType="org.example.pojo.Seat">
+        INSERT INTO seat (classroom_id, seat_number, status)
+        VALUES (#{classroomId}, #{seatNumber}, #{status})
+    </insert>
+
+    <select id="selectById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM seat
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectByClassroomId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM seat
+        WHERE classroom_id = #{classroomId}
+        ORDER BY seat_number
+    </select>
+
+    <select id="selectByClassroomIdAndStatus" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM seat
+        WHERE classroom_id = #{classroomId} AND status = #{status}
+        ORDER BY seat_number
+    </select>
+
+    <update id="updateStatus">
+        UPDATE seat
+        SET status = #{status}
+        WHERE id = #{id}
+    </update>
+
+    <update id="update" parameterType="org.example.pojo.Seat">
+        UPDATE seat
+        SET classroom_id = #{classroomId},
+        seat_number = #{seatNumber},
+        status = #{status}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        DELETE FROM seat WHERE id = #{id}
+    </delete>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM seat
+        ORDER BY classroom_id, seat_number
+    </select>
+
+    <!-- 在现有的XML文件中添加以下方法 -->
+    <select id="selectBySeatNumber" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM seat
+        WHERE classroom_id = #{classroomId} AND seat_number = #{seatNumber}
+    </select>
+
+    <select id="selectByStatus" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM seat
+        WHERE status = #{status}
+        ORDER BY classroom_id, seat_number
+    </select>
+
+    <insert id="batchInsert" parameterType="java.util.List">
+        INSERT INTO seat (classroom_id, seat_number, status) VALUES
+        <foreach collection="seats" item="seat" separator=",">
+            (#{seat.classroomId}, #{seat.seatNumber}, #{seat.status})
+        </foreach>
+    </insert>
+
+    <delete id="deleteByClassroomId" parameterType="java.lang.Integer">
+        DELETE FROM seat WHERE classroom_id = #{classroomId}
+    </delete>
+
+</mapper>
